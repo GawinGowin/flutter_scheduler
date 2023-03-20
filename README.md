@@ -1,3 +1,7 @@
+# プロジェクトの始め方の参考
+
+[@flutteruniv より](https://github.com/flutteruniv/recommender/blob/develop/doc/how_to_start.md)
+
 # flutter_scheduler
 
 A new Flutter project.
