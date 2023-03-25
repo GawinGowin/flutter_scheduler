@@ -35,7 +35,6 @@ class _ScheduleState extends State<Schedule> {
   String log = "";
 
   Map results = {};
-
   //Map<String,String> msgs = {"head1":"", "head2":""};
 
   Future<void> getData() async{
@@ -87,6 +86,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Icon(Icons.schedule, color: Colors.grey,),
         title: Text("予定", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
