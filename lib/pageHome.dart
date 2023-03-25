@@ -18,62 +18,119 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _counter = 0;
-
+  DateTime time = DateTime.now();
+  
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final double deviceHeight = MediaQuery.of(context).size.height;
+    final double deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.home, color: Colors.grey,),
         title: Text("ホーム", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+
+      body: Container(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Container(
+              height: deviceHeight*0.25,
+              width: double.infinity,
+              margin: EdgeInsets.all(20),
+              padding: EdgeInsets.all(5),
+              color: Colors.green,
+
+              child: Column(
+                children: [
+                  Container(
+                    child: Text(
+                      "${time.year}-${time.month}-${time.day}",
+                      style: TextStyle(fontSize: 32,),
+                    ),
+                    height: 32,
+                    color: Colors.green[700],
+                    alignment: Alignment.topLeft,
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        color: Colors.red,
+                        width: deviceWidth*0.55,
+                        child: Column(
+                          children: [
+                            Container(
+                              child: Text(
+                                "${time.hour}:${time.minute}:${time.second}",
+                                style: TextStyle(fontSize: 40),
+                              ),
+                              height: 40,
+                              color: Colors.blue,
+                            ),
+                      
+                            Container(
+                              child: Text(
+                                String.fromCharCodes([0x22EE]),
+                                style: TextStyle(fontSize: 40),
+                              ),
+                              height: 50,
+                              color: Colors.blue,
+                            ),
+                      
+                            Container(
+                              child: Text(
+                                "${time.hour}:${time.minute}:${time.second}",
+                                style: TextStyle(fontSize: 40),
+                              ),
+                              height: 40,
+                              color: Colors.blue,
+                            ),                        
+                          ],
+                        ),
+                      ),                        
+                    ],
+                  ),
+                  Container(
+                    width: deviceWidth*0.40,
+                    color: Colors.red[100],
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Text(
+                            "出発",
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          height: 30,
+                          color: Colors.blue,
+                        ),
+
+                        Container(
+                          child: Text(
+                            "到着",
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          height: 30,
+                          color: Colors.blue,
+                        ),                        
+                      ],
+                    ),
+                  ),                        
+                ],
+              )
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
+
+            
+          ]
+        )),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
