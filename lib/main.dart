@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_scheduler/pageHome.dart';
 import 'package:flutter_scheduler/pageSchedule.dart';
+import 'package:flutter_scheduler/pageAdd.dart';
 import 'package:flutter_scheduler/pageSettings.dart';
+
 
 void main() {
   const app = MaterialApp(home: MyApp());
@@ -14,7 +16,6 @@ void main() {
 final indexProvider = StateProvider((ref){
   return 0;
 });
-
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -32,13 +33,16 @@ class MyApp extends ConsumerWidget {
         label:"予定"
         ),
       BottomNavigationBarItem(
+        icon: Icon(Icons.add_circle_outline),
+        label:"追加"
+        ),        
+      BottomNavigationBarItem(
         icon: Icon(Icons.settings_outlined),
         label:"設定"
         ),
     ];
     final bar = BottomNavigationBar(
       items: items,
-      backgroundColor: Colors.grey[200],
       selectedItemColor: Colors.amber[600],
       unselectedItemColor: Colors.grey,
       currentIndex: index,
@@ -50,6 +54,7 @@ class MyApp extends ConsumerWidget {
     final pages = [
       Home(),
       Schedule(),
+      Add(),
       Settings(),
     ];
 

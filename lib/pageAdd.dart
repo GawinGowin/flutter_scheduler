@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Settings extends StatelessWidget {
-  const Settings({super.key});
+class Add extends StatelessWidget {
+  const Add({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("設定", style: TextStyle(color: Colors.black),),
+        title: Text("追加", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
     );

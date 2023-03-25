@@ -87,17 +87,12 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("予定"),
+        title: Text("予定", style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.grey[200]
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            /**
-             * Padding(
-             * padding: EdgeInsets.all(8),
-             * child:Text(_controller.text)
-             * ),
-             */
             Padding(
               padding: EdgeInsets.all(8),
               child:Text(jsonEncode(results))
