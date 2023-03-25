@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'dart:convert';
 import "dart:io";
-import 'dart:ui' as ui;
+
+import "package:shared_preferences/shared_preferences.dart";
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:yaml/yaml.dart';
-
-Future<String> loadApiKey() async {
-  final config = await rootBundle.loadString('lib/config.yaml');
-  final yaml = loadYaml(config);
-  return yaml['api_key'];
-}
 
 class Schedule extends StatefulWidget {
   const Schedule({super.key});
@@ -21,38 +15,36 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
-  bool isError = false;
-  int time = DateTime.now().microsecondsSinceEpoch;
+  int now = DateTime.now().microsecondsSinceEpoch;
+  int _arrivalTime = 0;
+  int _departureTime = 0;
+  int _duration = 0;
+  bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
+
+  @override
+  void initState(){
+    super.initState();
+    loadPref();
+  }
 
   final _controller = TextEditingController();
 
   final String host = "maps.googleapis.com";
   final String path = '/maps/api/directions/json';    
-
-  bool arrivalOrDeparture = true; // {"arrival_time":true, "departure_time":false}
-  int arrival_time = DateTime.now().microsecondsSinceEpoch;
-  int departure_time = DateTime.now().microsecondsSinceEpoch;
+  
   String log = "";
-
+  bool isError = false;
   Map results = {};
   //Map<String,String> msgs = {"head1":"", "head2":""};
 
   Future<void> getData() async{
     final apiKey = await loadApiKey();
-
     Map <String, String> params = {
       "destination": "place_id:ChIJd7mELCywEmsR0Ajw-Wh9AQ8", // ロイヤル・プリンス・アルフレッド病院
       "origin":"place_id:ChIJlwsH0RWuEmsR3Cg3WEDw76I", // オーストラリア博物館
-      "mode": "DRIVING", // available_travel_modes = ["DRIVING", "WALKING", "BICYCLING"]
+      "mode": "walking", // available_travel_modes = ["driving", "walking", "bicycling"]
       "language": "ja",
       "key": apiKey};
-
-    if (arrivalOrDeparture){
-      params["arrival_time"] = "$arrival_time";
-    }
-    else {
-      params["departure_time"] = "$departure_time";
-    }
 
     try {
       var response = await http.get(
@@ -62,6 +54,15 @@ class _ScheduleState extends State<Schedule> {
       setState(() {
         _controller.text = jsonResponse['routes'].join();
         results = analyseRequest(jsonResponse);
+        _duration = results["duration"];
+        if (_arrivalOrDeparture){
+          _arrivalTime = now;
+          _departureTime = now - _duration;
+        }
+        else {
+          _arrivalTime = now + _duration;
+          _departureTime = now;
+        }
       });
     } on SocketException catch (socketException) {
       // ソケット操作が失敗した時にスローされる例外
@@ -86,22 +87,30 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.schedule, color: Colors.grey,),
-        title: Text("予定", style: TextStyle(color: Colors.black),),
+        leading: const Icon(Icons.schedule, color: Colors.grey,),
+        title: const Text("予定", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child:Text(jsonEncode(results))
             ),
 
             SwitchListTile(
               title: const Text('到着時刻 <----> 出発時刻'),
-              value: arrivalOrDeparture,
-              onChanged: (bool value){setState(() {arrivalOrDeparture = value; print("arrivalOrDeparture: $arrivalOrDeparture");});},
+              value: _arrivalOrDeparture,
+              onChanged: (bool value){setState(() {
+                _arrivalOrDeparture = value;
+                savePref();
+                print("arrivalOrDeparture: $_arrivalOrDeparture, $_duration");
+                print(
+                  "$_departureTime to $_arrivalTime:${_arrivalTime-_departureTime}"
+                );
+                print("$_arrivalOrDeparture");
+              });},
               secondary: const Icon(Icons.lightbulb_outline),
             )
           ],
@@ -112,6 +121,7 @@ class _ScheduleState extends State<Schedule> {
         child: Icon(Icons.open_in_new),
         onPressed: () {
           getData();
+          savePref();
           showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
@@ -122,6 +132,24 @@ class _ScheduleState extends State<Schedule> {
         },
       ),
     );
+  }
+
+  void loadPref() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState((){
+      _arrivalTime = (prefs.getInt("arrivalTime") ?? DateTime.now().microsecondsSinceEpoch);
+      _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
+      _duration = (prefs.getInt("duration") ?? 0);
+      _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
+    });
+  }
+
+  void savePref() async{
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt("arrivalTime", _arrivalTime);
+  prefs.setInt("departureTime", _departureTime);
+  prefs.setInt("duration", _duration);
+  prefs.setBool("arrivalOrDeparture", _arrivalOrDeparture);
   }
 }
 
@@ -156,7 +184,13 @@ dynamic errorMsgs(http.Response response) {
   }
 }
 
+Future<String> loadApiKey() async {
+  final config = await rootBundle.loadString('lib/config.yaml');
+  final yaml = loadYaml(config);
+  return yaml['api_key'];
+}
+
 /*
-Getメソッドを用いたリクエストの実装について
-https://zenn.dev/mukkun69n/articles/c9980d3298cf9e
+# Refer
+- https://zenn.dev/mukkun69n/articles/c9980d3298cf9e
 */

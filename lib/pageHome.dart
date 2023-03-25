@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import "package:shared_preferences/shared_preferences.dart";
+
 import 'package:flutter_scheduler/modules/clock_card.dart';
 
 class Home extends StatefulWidget {
@@ -9,15 +11,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _counter = 0;
+  int _duration = 0;
+  int _departureTime = DateTime.now().microsecondsSinceEpoch;
+  int _arrivalTime = DateTime.now().microsecondsSinceEpoch;
+  bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
 
-  DateTime arrivalTime = DateTime.now();
-  DateTime departureTime = DateTime.now().add(const Duration(hours: 2));
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState(){
+    super.initState();
+    loadPref();
   }
 
   @override
@@ -35,16 +37,23 @@ class _HomeState extends State<Home> {
       body: Container(
         child: Column(
           children: <Widget>[
-            clockCard(arrivalTime, departureTime, deviceWidth, deviceHeight),
-
+            clockCard(
+              DateTime.fromMicrosecondsSinceEpoch(_arrivalTime),
+              DateTime.fromMicrosecondsSinceEpoch(_departureTime),
+              deviceWidth,
+              deviceHeight),
           ]
         )),
-      
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void loadPref() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState((){
+      _arrivalTime = (prefs.getInt("arrivalTime") ?? DateTime.now().microsecondsSinceEpoch);
+      _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
+      _duration = (prefs.getInt("duration") ?? 0);
+      _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
+    });
   }
 }
