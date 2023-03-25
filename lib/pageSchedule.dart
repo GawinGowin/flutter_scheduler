@@ -22,69 +22,64 @@ class Schedule extends StatefulWidget {
 
 class _ScheduleState extends State<Schedule> {
   bool isError = false;
-  DateTime now = DateTime.utc(1989, 11, 9);
-  DateTime arrive = DateTime.utc(1989, 11, 10);
+  int time = DateTime.now().microsecondsSinceEpoch;
+
   final _controller = TextEditingController();
 
+  final String host = "maps.googleapis.com";
+  final String path = '/maps/api/directions/json';    
+
+  bool arrivalOrDeparture = true; // {"arrival_time":true, "departure_time":false}
+  int arrival_time = DateTime.now().microsecondsSinceEpoch;
+  int departure_time = DateTime.now().microsecondsSinceEpoch;
+  String log = "";
+
+  Map results = {};
+
+  //Map<String,String> msgs = {"head1":"", "head2":""};
+
   Future<void> getData() async{
-    const host = "maps.googleapis.com";
-    const path = '/maps/api/directions/json';    
     final apiKey = await loadApiKey();
 
-    final params = {
-      "destination": "Montreal",
-      "origin":"Toronto",
+    Map <String, String> params = {
+      "destination": "place_id:ChIJd7mELCywEmsR0Ajw-Wh9AQ8", // ロイヤル・プリンス・アルフレッド病院
+      "origin":"place_id:ChIJlwsH0RWuEmsR3Cg3WEDw76I", // オーストラリア博物館
+      "mode": "DRIVING", // available_travel_modes = ["DRIVING", "WALKING", "BICYCLING"]
+      "language": "ja",
       "key": apiKey};
+
+    if (arrivalOrDeparture){
+      params["arrival_time"] = "$arrival_time";
+    }
+    else {
+      params["departure_time"] = "$departure_time";
+    }
 
     try {
       var response = await http.get(
-        Uri.https(
-          host,
-          path,
-          params
-        ));
+        Uri.https(host, path, params));
 
       var jsonResponse = errorMsgs(response);
       setState(() {
         _controller.text = jsonResponse['routes'].join();
+        results = analyseRequest(jsonResponse);
       });
     } on SocketException catch (socketException) {
       // ソケット操作が失敗した時にスローされる例外
       debugPrint("Error: ${socketException.toString()}");
       isError = true;
+      log = "SocketException";
+      
     } on Exception catch (exception) {
       // statusCode: 200以外の場合
       debugPrint("Error: ${exception.toString()}");
       isError = true;
+      log = "Error: ${exception.toString()}";
+ 
     } catch (_) {
       debugPrint("Error: 何かしらの問題が発生しています");
       isError = true;
-    }
-  }
-
-  dynamic errorMsgs(http.Response response) {
-    switch (response.statusCode) {
-      case 200:
-        var responseJson = jsonDecode(response.body);
-        return responseJson;
-      case 400:
-        // 400 Bad Request : 一般的なクライアントエラー
-        throw Exception('一般的なクライアントエラーです');
-      case 401:
-        // 401 Unauthorized : アクセス権がない、または認証に失敗
-        throw Exception('アクセス権限がない、または認証に失敗しました');
-      case 403:
-        // 403 Forbidden ： 閲覧権限がないファイルやフォルダ
-        throw Exception('閲覧権限がないファイルやフォルダです');
-      case 404:
-        // Not Found ： クライアントの要求に該当するものをサーバが見つけられなかった
-        throw Exception('Not Found');
-      case 500: 
-        // 500 何らかのサーバー内で起きたエラー
-        throw Exception('何らかのサーバー内で起きたエラーです');
-      default:
-        // それ以外の場合
-        throw Exception('何かしらの問題が発生しています');
+      log = "unexpected Error";
     }
   }
 
@@ -94,20 +89,30 @@ class _ScheduleState extends State<Schedule> {
       appBar: AppBar(
         title: Text("予定"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
+      body: SingleChildScrollView(
         child: Column(
-          children: <Widget>[
-            Text('INTERNET ACCESS.',
-              style: TextStyle(fontSize: 24,
-                  fontWeight: ui.FontWeight.w500),
+          children: [
+            /**
+             * Padding(
+             * padding: EdgeInsets.all(8),
+             * child:Text(_controller.text)
+             * ),
+             */
+            Padding(
+              padding: EdgeInsets.all(8),
+              child:Text(jsonEncode(results))
             ),
-            Padding(padding: EdgeInsets.all(10.0)),
 
-            Flexible(child: Text(_controller.text)),
+            SwitchListTile(
+              title: const Text('到着時刻 <----> 出発時刻'),
+              value: arrivalOrDeparture,
+              onChanged: (bool value){setState(() {arrivalOrDeparture = value; print("arrivalOrDeparture: $arrivalOrDeparture");});},
+              secondary: const Icon(Icons.lightbulb_outline),
+            )
           ],
-        ),
+        )
       ),
+      
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.open_in_new),
         onPressed: () {
@@ -116,12 +121,43 @@ class _ScheduleState extends State<Schedule> {
               context: context,
               builder: (BuildContext context) => AlertDialog(
                 title: Text("loaded!"),
-                content: Text("get content from URI."),
+                content: Text("なんかメッセージ"),
               )
           );
         },
       ),
     );
+  }
+}
+
+Map<String, dynamic> analyseRequest(Map jsonResponse){
+  Map<String, dynamic> resultMap = {
+    "start_address" : jsonResponse["routes"][0]["legs"][0]["start_address"],
+    "end_address" : jsonResponse["routes"][0]["legs"][0]["end_address"], 
+    "distance": jsonResponse["routes"][0]["legs"][0]["distance"]["value"],
+    "duration": jsonResponse["routes"][0]["legs"][0]["duration"]["value"],
+    "copyrights" : jsonResponse["routes"][0]["copyrights"],
+  };
+  return resultMap;
+}
+
+dynamic errorMsgs(http.Response response) {
+  switch (response.statusCode) {
+    case 200:
+      var responseJson = jsonDecode(response.body);
+      return responseJson;
+    case 400:
+      throw Exception('一般的なクライアントエラーです');
+    case 401:
+      throw Exception('アクセス権限がない、または認証に失敗しました');
+    case 403:
+      throw Exception('閲覧権限がないファイルやフォルダです');
+    case 404:
+      throw Exception('404 Not Found');
+    case 500: 
+      throw Exception('何らかのサーバー内で起きたエラーです');
+    default:
+      throw Exception('何かしらの問題が発生しています');
   }
 }
 
