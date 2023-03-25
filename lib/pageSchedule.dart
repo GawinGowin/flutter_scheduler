@@ -104,9 +104,9 @@ class _ScheduleState extends State<Schedule> {
             ),
 
             SwitchListTile(
-              title: const Text('Lights'),
+              title: const Text('到着時刻 <----> 出発時刻'),
               value: arrivalOrDeparture,
-              onChanged: (bool value){setState(() {arrivalOrDeparture = value; print(arrivalOrDeparture);});},
+              onChanged: (bool value){setState(() {arrivalOrDeparture = value; print("arrivalOrDeparture: $arrivalOrDeparture");});},
               secondary: const Icon(Icons.lightbulb_outline),
             )
           ],
@@ -121,7 +121,7 @@ class _ScheduleState extends State<Schedule> {
               context: context,
               builder: (BuildContext context) => AlertDialog(
                 title: Text("loaded!"),
-                content: Text("(っ'ヮ'c)ｳｩｯﾋｮｵｱｱｧｱｱｱｧ"),
+                content: Text("なんかメッセージ"),
               )
           );
         },
