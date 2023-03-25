@@ -6,7 +6,6 @@ import 'package:flutter_scheduler/pageSchedule.dart';
 import 'package:flutter_scheduler/pageAdd.dart';
 import 'package:flutter_scheduler/pageSettings.dart';
 
-
 void main() {
   const app = MaterialApp(home: MyApp());
   const scope = ProviderScope(child: app);
@@ -57,7 +56,7 @@ class MyApp extends ConsumerWidget {
       Add(),
       Settings(),
     ];
-
+    
     return Scaffold(
       body: pages[index],
       bottomNavigationBar: bar,

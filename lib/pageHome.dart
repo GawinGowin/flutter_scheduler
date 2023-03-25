@@ -40,6 +40,7 @@ class _HomeState extends State<Home> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        leading: Icon(Icons.home, color: Colors.grey,),
         title: Text("ホーム", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
