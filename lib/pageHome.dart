@@ -15,6 +15,7 @@ class _HomeState extends State<Home> {
   int _departureTime = DateTime.now().microsecondsSinceEpoch;
   int _arrivalTime = DateTime.now().microsecondsSinceEpoch;
   bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
+  String _mode = "walking";
 
   @override
   void initState() {
@@ -51,9 +52,17 @@ class _HomeState extends State<Home> {
       _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
       _duration = (prefs.getInt("duration") ?? 0);
       _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
+      _mode = (prefs.getString("mode") ?? "walking"); //["walking", "bicycling", "driving"]
     });
-    print("arrivalOrDeparture: $_arrivalOrDeparture, $_duration");
+    printLog();
+  }
+  void printLog(){
+    print("-"*35);
+    print("arrivalTime: $_arrivalTime");
+    print("departureTime: $_departureTime");
+    print("duration: $_duration (${_duration/1000000~/60} min)");
+    print("arrivalOrDeparture: $_arrivalOrDeparture");
     print("$_departureTime to $_arrivalTime:${_arrivalTime-_departureTime}");
-    print("$_arrivalOrDeparture");
+    print("mode: $_mode");
   }
 }

@@ -66,6 +66,7 @@ class _ScheduleState extends State<Schedule> {
           _arrivalTime = now + _duration;
           _departureTime = now;
         }
+        savePref();
       });
     } on SocketException catch (socketException) {
       // ソケット操作が失敗した時にスローされる例外
@@ -110,7 +111,7 @@ class _ScheduleState extends State<Schedule> {
               value: _arrivalOrDeparture,
               onChanged: (bool value){setState(() {
                 _arrivalOrDeparture = value;
-                savePref();
+                getData();
               });},
               secondary: const Icon(Icons.lightbulb_outline),
             ),
@@ -119,12 +120,12 @@ class _ScheduleState extends State<Schedule> {
               isSelected: isSelected,
               onPressed: (int index) {
                 setState(() {
-                  for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++){
+                  for (int buttonIndex = 0; buttonIndex <isSelected.length; buttonIndex++){
                     if (buttonIndex == index){isSelected[buttonIndex] = true;}
                     else {isSelected[buttonIndex] = false;}
                   }
                   _mode = modes[isSelected.indexOf(true)];
-                  savePref();
+                  getData();
                 });
               },
               children: const <Widget>[
@@ -133,17 +134,8 @@ class _ScheduleState extends State<Schedule> {
                 Icon(Icons.drive_eta),
               ],
             )
-
           ],
         )
-      ),
-      
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.open_in_new),
-        onPressed: () {
-          getData();
-          savePref();
-        },
       ),
     );
   }
@@ -170,6 +162,7 @@ class _ScheduleState extends State<Schedule> {
   }
 
   void printLog(){
+    print("-"*35);
     print("arrivalTime: $_arrivalTime");
     print("departureTime: $_departureTime");
     print("duration: $_duration (${_duration/1000000~/60} min)");
