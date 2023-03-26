@@ -29,14 +29,13 @@ class _ScheduleState extends State<Schedule> {
   }
 
   final _controller = TextEditingController();
-
   final String host = "maps.googleapis.com";
   final String path = '/maps/api/directions/json';    
   
   String log = "";
   bool isError = false;
   Map results = {};
-  List<bool> _isSelected = <bool>[true, false, false];
+
   List<String> modes = <String>["walking", "bicycling", "driving"];
   
   //Map<String,String> msgs = {"head1":"", "head2":""};
@@ -89,6 +88,9 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
+    List<bool> isSelected = <bool>[false, false, false];
+    isSelected[modes.indexOf(_mode)] = true;
+
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.schedule, color: Colors.grey,),
@@ -109,24 +111,19 @@ class _ScheduleState extends State<Schedule> {
               onChanged: (bool value){setState(() {
                 _arrivalOrDeparture = value;
                 savePref();
-                print("arrivalOrDeparture: $_arrivalOrDeparture, $_duration");
-                print(
-                  "$_departureTime to $_arrivalTime:${_arrivalTime-_departureTime}"
-                );
-                print("$_arrivalOrDeparture");
               });},
               secondary: const Icon(Icons.lightbulb_outline),
             ),
 
             ToggleButtons(
-              isSelected: _isSelected,
+              isSelected: isSelected,
               onPressed: (int index) {
                 setState(() {
-                  for (int buttonIndex = 0; buttonIndex < _isSelected.length; buttonIndex++){
-                    if (buttonIndex == index){_isSelected[buttonIndex] = true;}
-                    else {_isSelected[buttonIndex] = false;}
+                  for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++){
+                    if (buttonIndex == index){isSelected[buttonIndex] = true;}
+                    else {isSelected[buttonIndex] = false;}
                   }
-                  _mode = modes[_isSelected.indexOf(true)];
+                  _mode = modes[isSelected.indexOf(true)];
                   savePref();
                 });
               },
@@ -146,13 +143,6 @@ class _ScheduleState extends State<Schedule> {
         onPressed: () {
           getData();
           savePref();
-          showDialog(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: Text("loaded!"),
-                content: Text("なんかメッセージ"),
-              )
-          );
         },
       ),
     );
@@ -170,12 +160,22 @@ class _ScheduleState extends State<Schedule> {
   }
 
   void savePref() async{
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt("arrivalTime", _arrivalTime);
-  prefs.setInt("departureTime", _departureTime);
-  prefs.setInt("duration", _duration);
-  prefs.setBool("arrivalOrDeparture", _arrivalOrDeparture);
-  prefs.setString("mode", _mode);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt("arrivalTime", _arrivalTime);
+    prefs.setInt("departureTime", _departureTime);
+    prefs.setInt("duration", _duration);
+    prefs.setBool("arrivalOrDeparture", _arrivalOrDeparture);
+    prefs.setString("mode", _mode);
+    printLog();
+  }
+
+  void printLog(){
+    print("arrivalTime: $_arrivalTime");
+    print("departureTime: $_departureTime");
+    print("duration: $_duration (${_duration/1000000~/60} min)");
+    print("arrivalOrDeparture: $_arrivalOrDeparture");
+    print("$_departureTime to $_arrivalTime:${_arrivalTime-_departureTime}");
+    print("mode: $_mode");
   }
 }
 
