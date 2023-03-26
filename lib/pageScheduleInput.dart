@@ -90,15 +90,19 @@ class _InputScheduleState extends State<InputSchedule> {
                 DateTime _time = DateTime(now.year, now.month, now.day,
                     selectedTime!.hour, selectedTime!.minute);
                 String select, notSelect;
-                if (selectDep == true) {
+                bool arrOrDep;
+                if (selectDep == false) {
                   select = "arrivalTime";
                   notSelect = "departureTime";
+                  arrOrDep = true;
                 } else {
                   select = "departureTime";
                   notSelect = "arrivalTime";
+                  arrOrDep = false;
                 }
                 _saveTime(select, _time);
                 _saveTime(notSelect, now);
+                _saveArrOrDep(arrOrDep);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -115,6 +119,11 @@ class _InputScheduleState extends State<InputSchedule> {
     var prefs = await SharedPreferences.getInstance();
     int value = time.microsecondsSinceEpoch;
     prefs.setInt(key, value);
+  }
+
+  void _saveArrOrDep(bool arrOrDep) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool("arrivalOrDeparture", arrOrDep);
   }
 
   Future _pickTime(BuildContext context) async {
