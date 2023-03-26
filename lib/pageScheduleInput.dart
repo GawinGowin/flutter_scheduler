@@ -89,13 +89,16 @@ class _InputScheduleState extends State<InputSchedule> {
                 DateTime now = DateTime.now();
                 DateTime _time = DateTime(now.year, now.month, now.day,
                     selectedTime!.hour, selectedTime!.minute);
-                String arrOrDep;
+                String select, notSelect;
                 if (selectDep == true) {
-                  arrOrDep = "arrivalTime";
+                  select = "arrivalTime";
+                  notSelect = "departureTime";
                 } else {
-                  arrOrDep = "departureTime";
+                  select = "departureTime";
+                  notSelect = "arrivalTime";
                 }
-                _saveTime(arrOrDep, _time);
+                _saveTime(select, _time);
+                _saveTime(notSelect, now);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
