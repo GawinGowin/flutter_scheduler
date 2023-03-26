@@ -1,50 +1,61 @@
 import 'package:flutter/material.dart';
+import "package:shared_preferences/shared_preferences.dart";
 
-class MyApp extends StatelessWidget {
+
+class AddPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: MyHomePage(),
-    );
-  }
+  _AddPageState createState() => _AddPageState();
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _AddPageState extends State<AddPage> {
   List<String> _texts = [];
   TextEditingController _textEditingController = TextEditingController();
 
-  void _addTextToList() {
+  @override
+  void initState() {
+    super.initState();
+    loadPref();
+  }
+
+  void _addTextToList() async{
     if (_textEditingController.text.isNotEmpty) {
       setState(() {
         _texts.add(_textEditingController.text);
         _textEditingController.clear();
+        savePref();
       });
     }
   }
 
-  void _removeTextFromList(int index) {
+  void _removeTextFromList(int index) async{
     setState(() {
       _texts.removeAt(index);
+      savePref();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final double deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('持ち物'),
+        leading: Icon(Icons.add_circle_outline, color: Colors.grey,),
+        title: Text("追加", style: TextStyle(color: Colors.black),),
+        backgroundColor: Colors.grey[200]
       ),
       body: Column(
         children: [
-          TextField(
+          Container(
+            margin: EdgeInsets.all(deviceWidth*0.05),
+            child:TextField(
             controller: _textEditingController,
-          ),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'メモを入力',
+            ),
+          ),),
+
           ElevatedButton(
             onPressed: _addTextToList,
             child: Text('追加'),
@@ -66,5 +77,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  void loadPref() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState((){
+      _texts = (prefs.getStringList("texts") ?? []);
+    });
+  }
+
+  void savePref() async{
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList("texts", _texts);
   }
 }
