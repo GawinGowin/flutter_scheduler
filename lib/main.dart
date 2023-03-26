@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_scheduler/pageHome.dart';
 import 'package:flutter_scheduler/pageSchedule.dart';
-import 'package:flutter_scheduler/pageAdd.dart';
+import 'package:flutter_scheduler/itemPage.dart';
 import 'package:flutter_scheduler/pageSettings.dart';
 
 void main() {
@@ -53,7 +53,7 @@ class MyApp extends ConsumerWidget {
     final pages = [
       Home(),
       Schedule(),
-      Add(),
+      AddPage(),
       Settings(),
     ];
     

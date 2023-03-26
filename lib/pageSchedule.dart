@@ -68,6 +68,7 @@ class _ScheduleState extends State<Schedule> {
           _arrivalTime = now + _duration;
           _departureTime = now;
         }
+        savePref();
       });
     } on SocketException catch (socketException) {
       // ソケット操作が失敗した時にスローされる例外
@@ -116,12 +117,11 @@ class _ScheduleState extends State<Schedule> {
             onChanged: (bool value) {
               setState(() {
                 _arrivalOrDeparture = value;
-                savePref();
+                getData();
               });
             },
             secondary: const Icon(Icons.lightbulb_outline),
           ),
-          SizedBox(height: deviceHeight * 0.1),
           ToggleButtons(
             isSelected: isSelected,
             onPressed: (int index) {
@@ -136,36 +136,17 @@ class _ScheduleState extends State<Schedule> {
                   }
                 }
                 _mode = modes[isSelected.indexOf(true)];
-                savePref();
+                getData();
               });
             },
             children: const <Widget>[
-              Icon(
-                Icons.directions_walk,
-                color: Color(0xffc1a14e),
-                size: 60,
-              ),
-              Icon(
-                Icons.directions_bike,
-                color: Color(0xffc1a14e),
-                size: 60,
-              ),
-              Icon(
-                Icons.drive_eta,
-                color: Color(0xffc1a14e),
-                size: 60,
-              ),
+              Icon(Icons.directions_walk),
+              Icon(Icons.directions_bike),
+              Icon(Icons.drive_eta),
             ],
           )
         ],
       )),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.open_in_new),
-        onPressed: () {
-          getData();
-          savePref();
-        },
-      ),
     );
   }
 
@@ -194,6 +175,7 @@ class _ScheduleState extends State<Schedule> {
   }
 
   void printLog() {
+    print("-" * 35);
     print("arrivalTime: $_arrivalTime");
     print("departureTime: $_departureTime");
     print("duration: $_duration (${_duration / 1000000 ~/ 60} min)");
