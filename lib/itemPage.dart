@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:shared_preferences/shared_preferences.dart";
 
-
 class AddPage extends StatefulWidget {
   @override
   _AddPageState createState() => _AddPageState();
@@ -17,7 +16,7 @@ class _AddPageState extends State<AddPage> {
     loadPref();
   }
 
-  void _addTextToList() async{
+  void _addTextToList() async {
     if (_textEditingController.text.isNotEmpty) {
       setState(() {
         _texts.add(_textEditingController.text);
@@ -27,7 +26,7 @@ class _AddPageState extends State<AddPage> {
     }
   }
 
-  void _removeTextFromList(int index) async{
+  void _removeTextFromList(int index) async {
     setState(() {
       _texts.removeAt(index);
       savePref();
@@ -40,25 +39,48 @@ class _AddPageState extends State<AddPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.add_circle_outline, color: Colors.grey,),
-        title: Text("追加", style: TextStyle(color: Colors.black),),
-        backgroundColor: Colors.grey[200]
-      ),
+          leading: Icon(
+            Icons.add_circle_outline,
+            color: Colors.grey,
+          ),
+          title: Text(
+            "追加",
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: Colors.grey[200]),
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.all(deviceWidth*0.05),
-            child:TextField(
-            controller: _textEditingController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'メモを入力',
+            margin: EdgeInsets.all(deviceWidth * 0.05),
+            child: TextField(
+              controller: _textEditingController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'メモを入力',
+              ),
             ),
-          ),),
-
+          ),
           ElevatedButton(
             onPressed: _addTextToList,
-            child: Text('追加'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xfffffbea),
+              foregroundColor: Color(0xffc1a14e),
+              side: const BorderSide(
+                color: Color(0xffc1a14e),
+                width: 1,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              '追加',
+              style: TextStyle(
+                color: Color(0xffc1a14e),
+                fontSize: 10,
+                fontFamily: "Noto Sans",
+              ),
+            ),
           ),
           Expanded(
             child: ListView.builder(
@@ -79,14 +101,14 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
-  void loadPref() async{
+  void loadPref() async {
     final prefs = await SharedPreferences.getInstance();
-    setState((){
+    setState(() {
       _texts = (prefs.getStringList("texts") ?? []);
     });
   }
 
-  void savePref() async{
+  void savePref() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList("texts", _texts);
   }
