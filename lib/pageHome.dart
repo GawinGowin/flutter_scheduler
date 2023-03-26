@@ -30,6 +30,25 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double deviceHeight = MediaQuery.of(context).size.height;
+
+    var itemCardModule;
+    if ( _texts.isEmpty){
+      itemCardModule = Container(
+        height: deviceHeight*0.35,
+        width: double.infinity,
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(5),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(15),
+          ),
+        child: Text("メモはありません", style: TextStyle(fontSize: 20),)
+      );
+    }
+    else {
+      itemCardModule = itemCard(_texts, deviceWidth, deviceHeight);
+    }
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.home, color: Colors.grey,),
@@ -44,11 +63,7 @@ class _HomeState extends State<Home> {
               DateTime.fromMicrosecondsSinceEpoch(_departureTime),
               deviceWidth,
               deviceHeight),
-            itemCard(
-              _texts,
-              deviceWidth,
-              deviceHeight
-            ),
+            itemCardModule,
           ]
         )),
     );
