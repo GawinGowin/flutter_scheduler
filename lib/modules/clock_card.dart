@@ -18,12 +18,12 @@ Container clockCard(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children:[
               Text(
-                "${arrivalTime.year.toString().padLeft(2, "0")}-${arrivalTime.month.toString().padLeft(2, "0")}-${arrivalTime.day.toString().padLeft(2, "0")}",
+                "${departureTime.year.toString().padLeft(2, "0")}-${departureTime.month.toString().padLeft(2, "0")}-${departureTime.day.toString().padLeft(2, "0")}",
                 style: const TextStyle(fontSize: 28),
               ),
               const Icon(Icons.double_arrow),
               Text(
-                "${departureTime.year.toString().padLeft(2, "0")}-${departureTime.month.toString().padLeft(2, "0")}-${departureTime.day.toString().padLeft(2, "0")}",
+                "${arrivalTime.year.toString().padLeft(2, "0")}-${arrivalTime.month.toString().padLeft(2, "0")}-${arrivalTime.day.toString().padLeft(2, "0")}",
                 style: const TextStyle(fontSize: 28),
               ),
             ],
@@ -38,14 +38,13 @@ Container clockCard(
               child: Column(
                 children: [
                   Container(
-                    //color: Colors.blue,
                     height: 55,
+                    //color: Colors.blue,                              
                     child: Text(
-                      "${arrivalTime.hour.toString().padLeft(2, "0")}:${arrivalTime.minute.toString().padLeft(2, "0")}",
+                      "${departureTime.hour.toString().padLeft(2, "0")}:${departureTime.minute.toString().padLeft(2, "0")}",
                       style: const TextStyle(fontSize: 55),
                     ),
-                  ),
-            
+                  ),   
                   Container(
                     height: 50,
                     alignment: Alignment.center,
@@ -55,15 +54,14 @@ Container clockCard(
                       style: const TextStyle(fontSize: 25),
                     ),
                   ),
-
                   Container(
+                    //color: Colors.blue,
                     height: 55,
-                    //color: Colors.blue,                              
                     child: Text(
-                      "${departureTime.hour.toString().padLeft(2, "0")}:${departureTime.minute.toString().padLeft(2, "0")}",
+                      "${arrivalTime.hour.toString().padLeft(2, "0")}:${arrivalTime.minute.toString().padLeft(2, "0")}",
                       style: const TextStyle(fontSize: 55),
                     ),
-                  ),                        
+                  ),
                 ],
               ),
             ),  

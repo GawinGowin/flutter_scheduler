@@ -20,6 +20,7 @@ class _ScheduleState extends State<Schedule> {
   int _departureTime = 0;
   int _duration = 0;
   bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
+  String _mode = "walking";
 
   @override
   void initState(){
@@ -35,14 +36,17 @@ class _ScheduleState extends State<Schedule> {
   String log = "";
   bool isError = false;
   Map results = {};
+  List<bool> _isSelected = <bool>[true, false, false];
+  List<String> modes = <String>["walking", "bicycling", "driving"];
+  
   //Map<String,String> msgs = {"head1":"", "head2":""};
-
+  
   Future<void> getData() async{
     final apiKey = await loadApiKey();
     Map <String, String> params = {
       "destination": "place_id:ChIJd7mELCywEmsR0Ajw-Wh9AQ8", // ロイヤル・プリンス・アルフレッド病院
       "origin":"place_id:ChIJlwsH0RWuEmsR3Cg3WEDw76I", // オーストラリア博物館
-      "mode": "walking", // available_travel_modes = ["driving", "walking", "bicycling"]
+      "mode": _mode, // available_travel_modes = ["walking", "bicycling", "driving"]
       "language": "ja",
       "key": apiKey};
 
@@ -54,7 +58,7 @@ class _ScheduleState extends State<Schedule> {
       setState(() {
         _controller.text = jsonResponse['routes'].join();
         results = analyseRequest(jsonResponse);
-        _duration = results["duration"];
+        _duration = results["duration"]*1000000;
         if (_arrivalOrDeparture){
           _arrivalTime = now;
           _departureTime = now - _duration;
@@ -112,7 +116,27 @@ class _ScheduleState extends State<Schedule> {
                 print("$_arrivalOrDeparture");
               });},
               secondary: const Icon(Icons.lightbulb_outline),
+            ),
+
+            ToggleButtons(
+              isSelected: _isSelected,
+              onPressed: (int index) {
+                setState(() {
+                  for (int buttonIndex = 0; buttonIndex < _isSelected.length; buttonIndex++){
+                    if (buttonIndex == index){_isSelected[buttonIndex] = true;}
+                    else {_isSelected[buttonIndex] = false;}
+                  }
+                  _mode = modes[_isSelected.indexOf(true)];
+                  savePref();
+                });
+              },
+              children: const <Widget>[
+                Icon(Icons.directions_walk),
+                Icon(Icons.directions_bike),
+                Icon(Icons.drive_eta),
+              ],
             )
+
           ],
         )
       ),
@@ -141,6 +165,7 @@ class _ScheduleState extends State<Schedule> {
       _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
       _duration = (prefs.getInt("duration") ?? 0);
       _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
+      _mode = (prefs.getString("mode") ?? "walking"); //["walking", "bicycling", "driving"]
     });
   }
 
@@ -150,6 +175,7 @@ class _ScheduleState extends State<Schedule> {
   prefs.setInt("departureTime", _departureTime);
   prefs.setInt("duration", _duration);
   prefs.setBool("arrivalOrDeparture", _arrivalOrDeparture);
+  prefs.setString("mode", _mode);
   }
 }
 

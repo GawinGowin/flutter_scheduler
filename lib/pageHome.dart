@@ -17,7 +17,7 @@ class _HomeState extends State<Home> {
   bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     loadPref();
   }
@@ -26,14 +26,12 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double deviceHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.home, color: Colors.grey,),
         title: const Text("ホーム", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.grey[200]
       ),
-
       body: Container(
         child: Column(
           children: <Widget>[
@@ -45,15 +43,17 @@ class _HomeState extends State<Home> {
           ]
         )),
     );
-  }
-
-  void loadPref() async{
+  }  
+  Future<void> loadPref() async{
     final prefs = await SharedPreferences.getInstance();
-    setState((){
+    setState(() {
       _arrivalTime = (prefs.getInt("arrivalTime") ?? DateTime.now().microsecondsSinceEpoch);
       _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
       _duration = (prefs.getInt("duration") ?? 0);
       _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
     });
+    print("arrivalOrDeparture: $_arrivalOrDeparture, $_duration");
+    print("$_departureTime to $_arrivalTime:${_arrivalTime-_departureTime}");
+    print("$_arrivalOrDeparture");
   }
 }
