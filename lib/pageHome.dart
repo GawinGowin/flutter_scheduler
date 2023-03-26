@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import "package:shared_preferences/shared_preferences.dart";
 
 import 'package:flutter_scheduler/modules/clock_card.dart';
+import 'package:flutter_scheduler/modules/item_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,6 +17,8 @@ class _HomeState extends State<Home> {
   int _arrivalTime = DateTime.now().microsecondsSinceEpoch;
   bool _arrivalOrDeparture = true; // {"arrivalTime":true, "departureTime":false}
   String _mode = "walking";
+
+  List<String> _texts = [];
 
   @override
   void initState() {
@@ -41,6 +44,11 @@ class _HomeState extends State<Home> {
               DateTime.fromMicrosecondsSinceEpoch(_departureTime),
               deviceWidth,
               deviceHeight),
+            itemCard(
+              _texts,
+              deviceWidth,
+              deviceHeight
+            ),
           ]
         )),
     );
@@ -48,11 +56,14 @@ class _HomeState extends State<Home> {
   Future<void> loadPref() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      // clock card contexts
       _arrivalTime = (prefs.getInt("arrivalTime") ?? DateTime.now().microsecondsSinceEpoch);
       _departureTime = (prefs.getInt("departureTime") ?? DateTime.now().microsecondsSinceEpoch);
       _duration = (prefs.getInt("duration") ?? 0);
       _arrivalOrDeparture = (prefs.getBool("arrivalOrDeparture") ?? true);
       _mode = (prefs.getString("mode") ?? "walking"); //["walking", "bicycling", "driving"]
+      // item list contexts
+      _texts = (prefs.getStringList("texts") ?? []);
     });
     printLog();
   }
