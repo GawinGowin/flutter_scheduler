@@ -5,7 +5,7 @@
 成果物リポジトリ
 
 # おーとみーる
-本アプリケーションは翌日の予定に関しての出発時刻と持ち物を管理できるメモアプリケーションです．
+本アプリケーションは翌日の予定に関しての出発時刻と持ち物を管理できるメモアプリケーションです．<br>
 出発地と目的地間の所要時間計算にはGoogleMapAPIを利用しています．
 
 ![image](https://user-images.githubusercontent.com/101625248/228148103-c3bd95a9-be7c-4a00-928c-d155303c5cfa.png)
@@ -28,7 +28,7 @@ Open your favorite code editor and copy `lib/config.example.yaml` to `lib/config
 $ cp lib/config.example.yaml lib/config.yaml
 ```
 
-### 3. Modify .env file
+### 3. Modify config.yaml file
 
 Generate token from [Set up your Google Cloud project](https://developers.google.com/maps/documentation/routes/cloud-setup).
 
