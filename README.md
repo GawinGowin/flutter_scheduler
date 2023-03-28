@@ -8,7 +8,9 @@
 本アプリケーションは翌日の予定に関しての出発時刻と持ち物を管理できるメモアプリケーションです．
 出発地と目的地間の所要時間計算にはGoogleMapAPIを利用しています．
 
+![image](https://user-images.githubusercontent.com/101625248/228148103-c3bd95a9-be7c-4a00-928c-d155303c5cfa.png)
 
+上記の画像は日程終了時点のアプリ画面
 
 ## Getting Started
 
